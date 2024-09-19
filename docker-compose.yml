@@ -7,11 +7,11 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_DB=urlshrter
+      - POSTGRES_DB=urlshorter
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
     volumes:
-      - db: /var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     
 
   cache:
@@ -26,4 +26,6 @@ services:
 
 volumes:
   cache:
+    driver: local
+  db:
     driver: local
