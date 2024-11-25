@@ -1,16 +1,14 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 
 from .models import Url
 
 
-class UrlSerializer(serializers.ModelSerializer):
+class UrlSerializerIn(ModelSerializer):
     class Meta:
         model = Url
-        fields = ["full_url", "short_url", "counter", "created_at"]
-        read_only_fields = ["short_url", "counter", "created_at"]
+        fields = ["url"]
 
-    def create(self, validated_data):
-        # Create the Url object but don't save it yet
-        url_instance = Url(**validated_data)
-        url_instance.save()  # This triggers the short_url generation
-        return url_instance
+class UrlSerializerOut(ModelSerializer):
+    class Meta:
+        model = Url
+        fields = "__all__"
