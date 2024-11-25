@@ -66,9 +66,9 @@ To set up and run the project using Docker, follow these steps:
 
 2. **Access the API:**
 
-   The API will be available at `http://localhost:8000`.
-   swagger ui `http://localhost:8000/api/schema/swagger-ui/`.
-   redoc ui `http://localhost:8000/api/schema/redocs/`.
+   The API will be available at `http://localhost:8000`.<br />
+   swagger ui `http://localhost:8000/api/schema/swagger-ui/`.<br />
+   redoc ui `http://localhost:8000/api/schema/redocs/`.<br />
 
 3. **Shut down the containers:**
 
