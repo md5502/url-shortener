@@ -1,3 +1,5 @@
+
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -8,12 +10,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-cmwk3_@7mb$n_a8_u55904$due!ka=!!^-heh7lhl9!p&w9mt3"
+SECRET_KEY = "django-insecure-gtz_(vn3274+(6t6y@t_e1fp%fhmbyz-2a8z4%%4nf*7ow(*d)"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS:list = []
 
 
 # Application definition
@@ -26,9 +28,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # 3rd party pkgs
     "rest_framework",
+    "drf_spectacular",
+    "django_celery_results",
+    "django_celery_beat",
 
-    "api.apps.ApiConfig",
+    # local
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -71,7 +78,7 @@ DATABASES = {
         "NAME": "urlshorter",
         "USER": "user",
         "PASSWORD": "password",
-        "HOST": "localhost",
+        "HOST": "db",
         "PORT": "5432",
     },
 }
@@ -111,9 +118,66 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "staticfiles"]
+STATIC_ROOT = BASE_DIR / "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+
+REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "url shorting app",
+    "DESCRIPTION": "creating a app to make your url short",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
+}
+
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": "shorter",
+    },
+}
+
+
+# Redis and Celery settings
+CELERY_BROKER_URL = "redis://cache:6379/0"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+    "django": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+        "propagate": False,
+    },
+}
