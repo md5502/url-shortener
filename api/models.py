@@ -1,19 +1,21 @@
 import short_url
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Url(models.Model):
-    full_url = models.URLField(db_index=True)
-    short_url = models.CharField(max_length=20, db_index=True, blank=True, unique=True)
-    counter = models.IntegerField(default=0)  # Initialize counter to 0
-
-    created_at = models.DateTimeField(auto_now=True)
+    url = models.URLField(max_length=1000)
+    short_code = models.CharField(max_length=10, unique=True, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    access_count = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.full_url
+        return f"<URL {self.pk} >>{self.short_code}>"
 
-    def save(self, *args, **kwargs):
-        if not self.short_url:  # Only generate short_url if it doesn't exist
-            super().save(*args, **kwargs)  # Save first to generate the ID
-            self.short_url = short_url.encode_url(self.id)
-        super().save(*args, **kwargs)
+@receiver(post_save, sender=Url)
+def generate_short_code(sender, instance, created, **kwargs):
+    if created and not instance.short_code:
+        instance.short_code = short_url.encode_url(instance.pk)
+        instance.save(update_fields=["short_code"])
