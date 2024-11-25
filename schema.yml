@@ -1,0 +1,7 @@
+openapi: 3.0.3
+info:
+  title: url shorting app
+  version: 1.0.0
+  description: creating a app to make your url short
+paths: {}
+components: {}
